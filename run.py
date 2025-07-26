@@ -1,13 +1,12 @@
-from gevent import monkey
+import uvicorn
 
-monkey.patch_all()
-from app import create_app
-from app.config import config
-
-app = create_app()
+from app.backend.backend import app
 
 if __name__ == "__main__":
-	if config.ENV == "development":
-		app.run(host="0.0.0.0", port=8000, debug=config.DEBUG)
-	else:
-		app.run(debug=config.DEBUG)
+	uvicorn.run(
+		"app.backend.backend:app",
+		host="0.0.0.0",
+		port=8000,
+		reload=True,
+		log_level="info",
+	)

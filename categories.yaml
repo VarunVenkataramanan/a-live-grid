@@ -1,0 +1,68 @@
+location_category:
+  - Horamavu
+  - Ramamurthynagar
+  - Banaswadi
+  - Kammanahalli
+  - Kacharakanahalli
+  - Kadugondanahalli
+  - Kushalnagar
+  - Kavalbyrasandra
+  - Manorayanapalya
+  - Gangenahalli
+  - Aramanenagar
+  - Mathikere
+  - Yeshwanthpura
+  - H.M.T.
+  - Chokkasandra
+  - Dodda Bidarkallu
+  - Peenya Industrial Area
+  - Lakshmidevinagar
+  - Nandini Layout
+  - Marappana Palya
+  - Malleshwaram
+  - Jayachamarajendranagar
+  - Devarajeevanahalli
+  - Muneshwaranagar
+  - Lingarajapuram
+  - Benniganahalli
+  - Vijinapura
+  - Krishnarajapuram
+  - Basavanapura
+  - Hoodi
+  - Devasandra
+  - A.Narayanapura
+  - C.V.Raman Nagar
+  - Hosathippasandra
+  - Maruthisevanagar
+  - Sagayarapuram
+  - S.K. Garden
+  - Ramaswamypalya
+  - Jayamahal
+  - Rajamahal
+  - Kadumalleshwara
+  - Subrahmanyanagar
+  - Nagapura
+  - Mahalakshmipuram
+  - Vignananagar
+  - Garudacharpalya
+  - Kadugudi
+  - Hagadooru
+  - Doddanekkundi
+  - Marathahalli
+  - HSR
+  - Church Street
+  - Belandur
+
+road_closure_conditions:
+  - Construction or maintenance work
+  - Accidents or vehicle collisions
+  - Flooding or waterlogging
+  - Landslides or falling debris
+  - VIP movement or security lockdown
+  - Public events or processions
+  - Natural disasters (e.g., earthquakes, storms)
+  - Police investigations or crime scenes
+  - Fallen trees or electrical poles
+  - Poor road conditions or sinkholes
+  - Flash mobs or spontaneous public gatherings
+  - Riots or civil unrest
