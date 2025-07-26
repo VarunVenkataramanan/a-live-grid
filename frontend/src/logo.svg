@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200">
+  <!-- Grid background pattern -->
+  <defs>
+    <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e0e0e0" stroke-width="1"/>
+    </pattern>
+  </defs>
+  
+  <!-- Background with grid -->
+  <rect width="400" height="200" fill="white"/>
+  <rect width="400" height="200" fill="url(#grid)"/>
+  
+  <!-- Light grey filled areas (land parcels) -->
+  <path d="M 50 30 L 80 30 L 80 60 L 50 60 Z" fill="#f0f0f0"/>
+  <path d="M 300 40 L 350 40 L 350 80 L 300 80 Z" fill="#f0f0f0"/>
+  <path d="M 150 120 L 250 120 L 250 160 L 150 160 Z" fill="#f0f0f0"/>
+  
+  <!-- A-LiveGrid Text -->
+  <text x="200" y="110" text-anchor="middle" font-family="Arial, sans-serif" font-size="32" font-weight="bold">
+    <tspan fill="#333333">A-Live</tspan>
+    <tspan fill="#4285f4">Grid</tspan>
+  </text>
+</svg>
