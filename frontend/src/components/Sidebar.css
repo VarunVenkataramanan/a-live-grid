@@ -1,0 +1,123 @@
+.sidebar {
+  background: #fff;
+  color: #222;
+  width: 270px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 0 0 0;
+  border-right: 1px solid #e0e0e0;
+  transition: width 0.2s;
+}
+.sidebar.collapsed {
+  width: 64px;
+  min-width: 64px;
+  padding: 24px 0 0 0;
+}
+.sidebar-toggle {
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 12px 24px 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  box-sizing: border-box;
+}
+.sidebar.collapsed .sidebar-toggle {
+  padding: 12px 0 12px 0;
+  justify-content: center;
+}
+.hamburger-icon {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 24px;
+  height: 24px;
+  justify-content: center;
+}
+.hamburger-icon span {
+  display: block;
+  height: 3px;
+  width: 100%;
+  background: #222;
+  border-radius: 2px;
+  transition: background 0.2s;
+}
+.sidebar.collapsed .sidebar-header,
+.sidebar.collapsed .sidebar-nav,
+.sidebar.collapsed .sidebar-news {
+  display: none;
+}
+.sidebar-header {
+  padding: 0 32px 24px 32px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.sidebar-logo {
+  width: 40px;
+  height: 40px;
+}
+.sidebar-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.sidebar-title-bold {
+  color: #222;
+}
+.sidebar-title-accent {
+  color: #4285f4;
+}
+.sidebar-nav ul {
+  list-style: none;
+  padding: 0 0 16px 0;
+  margin: 0;
+}
+.sidebar-link {
+  padding: 12px 32px;
+  cursor: pointer;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  margin-bottom: 4px;
+  transition: background 0.2s;
+}
+.sidebar-link.active, .sidebar-link:hover {
+  background: #e8f0fe;
+  color: #4285f4;
+}
+.sidebar-news {
+  margin-top: 32px;
+  padding: 0 32px;
+}
+.news-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #4285f4;
+}
+.news-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.news-list li {
+  font-size: 0.875rem;
+  margin-bottom: 8px;
+  color: #222;
+  padding: 8px 0;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+  line-height: 1.4;
+}
+.news-list li:hover {
+  background-color: #e8f0fe;
+  color: #4285f4;
+} 
