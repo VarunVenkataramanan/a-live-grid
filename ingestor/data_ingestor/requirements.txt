@@ -1,0 +1,4 @@
+requests
+google-cloud-pubsub
+google-generativeai
+pyyaml 
