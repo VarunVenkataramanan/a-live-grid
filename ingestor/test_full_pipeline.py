@@ -11,10 +11,6 @@ def test_full_pipeline():
     print("🧪 Testing Full Pipeline: Google CSE → Pub/Sub → LLM Extraction")
     print("=" * 60)
     
-    # Set environment variables
-    os.environ["GOOGLE_CSE_API_KEY"] = "AIzaSyBhCExO4gJFw4GqYouESHUa6wEd5Xyiqtk"
-    os.environ["GOOGLE_CSE_ID"] = "f31747c301120487a"
-    
     try:
         # Step 1: Test Google CSE
         print("1️⃣ Testing Google CSE...")
@@ -80,7 +76,7 @@ def test_full_pipeline():
                 import traceback
                 traceback.print_exc()
             
-            # Step 4: Test with real Google CSE results
+            # Step 4: Test with real Google CSE resultsaa
             print("\n5️⃣ Testing with real Google CSE results...")
             if results.get('items'):
                 first_result = results['items'][0]
