@@ -79,6 +79,10 @@
   list-style: none;
   padding: 0 0 16px 0;
   margin: 0;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 #f1f1f1;
 }
 .sidebar-link {
   padding: 12px 32px;
@@ -92,32 +96,60 @@
   background: #e8f0fe;
   color: #4285f4;
 }
-.sidebar-news {
-  margin-top: 32px;
-  padding: 0 32px;
-}
-.news-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: #4285f4;
-}
-.news-list {
+
+.sidebar-divider {
+  height: 1px;
+  background: #e0e0e0;
+  margin: 16px 32px;
   list-style: none;
-  padding: 0;
-  margin: 0;
 }
-.news-list li {
-  font-size: 0.875rem;
-  margin-bottom: 8px;
-  color: #222;
-  padding: 8px 0;
+
+.sidebar-section-title {
+  padding: 8px 32px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #5f6368;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 8px;
+  list-style: none;
+}
+
+.sidebar-news-item {
+  padding: 8px 32px;
   cursor: pointer;
-  border-radius: 8px;
+  font-size: 0.875rem;
+  color: #222;
   transition: background-color 0.2s;
   line-height: 1.4;
+  border-radius: 0;
+  border-left: 3px solid transparent;
+  list-style: none;
+  margin-bottom: 2px;
 }
-.news-list li:hover {
-  background-color: #e8f0fe;
-  color: #4285f4;
-} 
+
+.sidebar-news-item:hover {
+  background-color: #f8f9fa;
+  color: #222;
+  border-left-color: #4285f4;
+}
+
+/* Custom scrollbar for webkit browsers */
+.sidebar-nav ul::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-nav ul::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.sidebar-nav ul::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.sidebar-nav ul::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+ 
