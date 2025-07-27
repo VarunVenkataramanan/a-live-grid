@@ -1,154 +1,166 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './NewsFeed.css';
 
-const NewsFeed = () => {
-  const [posts, setPosts] = useState([
-    {
-      id: 1,
-      title: "OpenAI launches new GPT-5 model with enhanced capabilities",
-      excerpt: "The latest iteration brings significant improvements in reasoning and multimodal understanding...",
-      description: "OpenAI has officially announced the release of GPT-5, their most advanced language model to date. This new iteration brings significant improvements in reasoning capabilities, multimodal understanding, and creative problem-solving. The model demonstrates enhanced performance across various benchmarks and introduces new features that make it more useful for complex tasks.",
-      author: "Tech Reporter",
-      date: "2 hours ago",
-      category: "AI",
-      upvotes: 42,
-      downvotes: 3,
-      userVote: null,
-      images: [
-        "https://picsum.photos/400/300?random=1",
-        "https://picsum.photos/400/300?random=2"
-      ],
-      url: "https://openai.com/blog/gpt-5"
-    },
-    {
-      id: 2,
-      title: "React 19 announced with concurrent features",
-      excerpt: "The new version introduces groundbreaking concurrent rendering capabilities...",
-      description: "React 19 introduces groundbreaking concurrent rendering capabilities that will revolutionize how developers build user interfaces. The new version includes automatic batching, improved suspense, and better performance optimizations that make React applications faster and more responsive than ever before.",
-      author: "Dev News",
-      date: "4 hours ago",
-      category: "Development",
-      upvotes: 28,
-      downvotes: 1,
-      userVote: null,
-      images: [
-        "https://picsum.photos/400/300?random=3"
-      ],
-      url: "https://react.dev/blog/2024/react-19"
-    },
-    {
-      id: 3,
-      title: "AI trends shaping the future of technology in 2024",
-      excerpt: "From autonomous systems to generative AI, here are the key trends...",
-      description: "The landscape of artificial intelligence is rapidly evolving, with several key trends shaping the future of technology. From autonomous systems and generative AI to edge computing and quantum machine learning, these developments are transforming industries and creating new opportunities for innovation.",
-      author: "Future Tech",
-      date: "6 hours ago",
-      category: "Technology",
-      upvotes: 35,
-      downvotes: 2,
-      userVote: null,
-      images: [
-        "https://picsum.photos/400/300?random=4",
-        "https://picsum.photos/400/300?random=5",
-        "https://picsum.photos/400/300?random=6",
-        "https://picsum.photos/400/300?random=7"
-      ],
-      url: "https://techcrunch.com/2024/ai-trends"
-    },
-    {
-      id: 4,
-      title: "Machine learning breakthroughs in healthcare",
-      excerpt: "New algorithms show promising results in early disease detection...",
-      description: "Recent breakthroughs in machine learning are revolutionizing healthcare with new algorithms that show promising results in early disease detection, drug discovery, and personalized medicine. These advances are helping doctors make better diagnoses and develop more effective treatment plans.",
-      author: "Health Tech",
-      date: "8 hours ago",
-      category: "Healthcare",
-      upvotes: 51,
-      downvotes: 0,
-      userVote: null,
-      images: [
-        "https://picsum.photos/400/300?random=8",
-        "https://picsum.photos/400/300?random=9",
-        "https://picsum.photos/400/300?random=10"
-      ],
-      url: "https://healthcare.ai/breakthroughs-2024"
-    },
-    {
-      id: 5,
-      title: "The rise of edge computing in IoT applications",
-      excerpt: "How edge computing is revolutionizing the Internet of Things...",
-      description: "Edge computing is revolutionizing the Internet of Things by bringing computation and data storage closer to the source of data. This approach reduces latency, improves security, and enables real-time processing for IoT applications, making them more efficient and responsive.",
-      author: "IoT Weekly",
-      date: "12 hours ago",
-      category: "IoT",
-      upvotes: 19,
-      downvotes: 4,
-      userVote: null,
-      images: [
-        "https://picsum.photos/400/300?random=11"
-      ],
-      url: "https://iotweekly.com/edge-computing-2024"
-    }
-  ]);
+const API_BASE_URL = 'https://livegrid-467013.el.r.appspot.com';
+
+const NewsFeed = ({ selectedPostId, onPostClose }) => {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const [selectedPost, setSelectedPost] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
 
-  const handleVote = (postId, voteType) => {
-    setPosts(prevPosts => 
-      prevPosts.map(post => {
-        if (post.id === postId) {
-          let newUpvotes = post.upvotes;
-          let newDownvotes = post.downvotes;
-          let newUserVote = voteType;
-
-          // Handle vote logic - user can only have one vote (up OR down)
-          if (post.userVote === voteType) {
-            // User is clicking the same vote again - remove it
-            if (voteType === 'up') {
-              newUpvotes -= 1;
-            } else {
-              newDownvotes -= 1;
-            }
-            newUserVote = null;
-          } else if (post.userVote === null) {
-            // User hasn't voted before - add the vote
-            if (voteType === 'up') {
-              newUpvotes += 1;
-            } else {
-              newDownvotes += 1;
-            }
-          } else {
-            // User is changing their vote from one type to another
-            // First remove the previous vote
-            if (post.userVote === 'up') {
-              newUpvotes -= 1;
-            } else {
-              newDownvotes -= 1;
-            }
-            // Then add the new vote
-            if (voteType === 'up') {
-              newUpvotes += 1;
-            } else {
-              newDownvotes += 1;
-            }
-          }
+  // API Functions
+  const fetchShortPosts = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE_URL}/api/v1/posts/short-post`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch posts');
+      }
+      const data = await response.json();
+      
+      // Transform the data to use local images - assign specific image to each post
+      const transformedPosts = data.map((post, index) => {
+        // Assign specific images to each post based on index
+        const imagePaths = [
+          '/images/IMG-20250727-WA0014.jpg',
+          '/images/IMG-20250727-WA0013.jpg',
+          '/images/IMG-20250727-WA0012.jpg',
+          '/images/IMG-20250727-WA0011.jpg',
+          '/images/IMG-20250727-WA0010.jpg',
+          '/images/IMG-20250727-WA0009.jpg',
+          '/images/IMG-20250727-WA0008.jpg',
+          '/images/IMG-20250727-WA0007.jpg',
+          '/images/IMG-20250727-WA0006.jpg',
+          '/images/IMG-20250727-WA0005.jpg'
+        ];
+        
+        // Use the image at the current index, or cycle back if more than 10 posts
+        const imagePath = imagePaths[index % imagePaths.length];
 
           return {
             ...post,
-            upvotes: newUpvotes,
-            downvotes: newDownvotes,
-            userVote: newUserVote
-          };
-        }
-        return post;
-      })
-    );
+          images: [imagePath],
+          excerpt: post.title || post.excerpt || '',
+          author: post.username || post.author || 'Anonymous',
+          date: post.created_at ? new Date(post.created_at).toLocaleDateString() : post.date || 'Unknown',
+          category: post.category || 'Traffic',
+          upvotes: post.upvote_count || post.upvotes || 0,
+          downvotes: post.downvote_count || post.downvotes || 0,
+          userVote: null
+        };
+      });
+      
+      setPosts(transformedPosts);
+      setError(null);
+    } catch (err) {
+      setError('Failed to load posts. Please try again later.');
+      console.error('Error fetching posts:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handlePostClick = (post) => {
+  const fetchLongPost = async (postId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/v1/posts/long-post/${postId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch post details');
+      }
+      const data = await response.json();
+      
+      // Find the corresponding short post to get the same image
+      const shortPost = posts.find(post => post.id === postId);
+      const imagePaths = [
+        '/images/IMG-20250727-WA0014.jpg',
+        '/images/IMG-20250727-WA0013.jpg',
+        '/images/IMG-20250727-WA0012.jpg',
+        '/images/IMG-20250727-WA0011.jpg',
+        '/images/IMG-20250727-WA0010.jpg',
+        '/images/IMG-20250727-WA0009.jpg',
+        '/images/IMG-20250727-WA0008.jpg',
+        '/images/IMG-20250727-WA0007.jpg',
+        '/images/IMG-20250727-WA0006.jpg',
+        '/images/IMG-20250727-WA0005.jpg'
+      ];
+      
+      // Use the same image as the short post, or default to first image
+      const postIndex = posts.findIndex(post => post.id === postId);
+      const imagePath = postIndex >= 0 ? imagePaths[postIndex % imagePaths.length] : imagePaths[0];
+      
+      // Transform the long post data to use local images
+      const transformedPost = {
+        ...data,
+        images: [imagePath],
+        excerpt: data.title || data.excerpt || '',
+        author: data.username || data.author || 'Anonymous',
+        date: data.created_at ? new Date(data.created_at).toLocaleDateString() : data.date || 'Unknown',
+        category: data.category || 'Traffic',
+        upvotes: data.upvote_count || data.upvotes || 0,
+        downvotes: data.downvote_count || data.downvotes || 0,
+        userVote: null
+      };
+      
+      return transformedPost;
+    } catch (err) {
+      console.error('Error fetching post details:', err);
+      return null;
+    }
+  };
+
+  const handleVoteAPI = async (postId, voteType) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/v1/posts/${postId}/vote`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ vote_type: voteType }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to submit vote');
+      }
+      
+      // Refresh posts to get updated vote counts
+      await fetchShortPosts();
+    } catch (err) {
+      console.error('Error submitting vote:', err);
+    }
+  };
+
+  // Fetch posts on component mount
+  useEffect(() => {
+    fetchShortPosts();
+  }, []);
+
+  // Effect to handle selectedPostId from sidebar
+  useEffect(() => {
+    if (selectedPostId) {
+      const post = posts.find(p => p.id === selectedPostId);
+      if (post) {
     setSelectedPost(post);
+        setShowModal(true);
+      }
+    }
+  }, [selectedPostId, posts]);
+
+  const handleVote = async (postId, voteType) => {
+    // Call the API to handle voting
+    await handleVoteAPI(postId, voteType);
+  };
+
+  const handlePostClick = async (post) => {
+    // Fetch detailed post data for modal
+    const detailedPost = await fetchLongPost(post.id);
+    if (detailedPost) {
+      setSelectedPost(detailedPost);
+    } else {
+      setSelectedPost(post); // Fallback to short post data
+    }
     setShowModal(true);
   };
 
@@ -156,6 +168,9 @@ const NewsFeed = () => {
     setShowModal(false);
     setSelectedPost(null);
     setPreviewImage(null);
+    if (onPostClose) {
+      onPostClose();
+    }
   };
 
   const handleImageClick = (imageUrl) => {
@@ -262,6 +277,23 @@ const NewsFeed = () => {
         <h2>Report Feed</h2>
         <p>Latest news and updates</p>
       </div>
+      
+      {loading && (
+        <div className="loading-container">
+          <p>Loading posts...</p>
+        </div>
+      )}
+      
+      {error && (
+        <div className="error-container">
+          <p>{error}</p>
+          <button onClick={fetchShortPosts} className="retry-button">
+            Try Again
+          </button>
+        </div>
+      )}
+      
+      {!loading && !error && (
       <div className="news-posts">
         {posts.map(post => (
           <article key={post.id} className="news-post" onClick={() => handlePostClick(post)}>
@@ -308,6 +340,7 @@ const NewsFeed = () => {
           </article>
         ))}
       </div>
+      )}
 
       {/* Post Detail Modal */}
       {showModal && selectedPost && (
@@ -324,7 +357,7 @@ const NewsFeed = () => {
                 {renderModalImageCollage(selectedPost.images)}
               </div>
               <div className="modal-image-caption">
-                Click on any image to preview
+                Click image to preview
               </div>
             </div>
             

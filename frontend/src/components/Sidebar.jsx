@@ -1,14 +1,54 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Sidebar.css';
 
-const Sidebar = ({ onFeedChange }) => {
+const API_BASE_URL = 'https://livegrid-467013.el.r.appspot.com';
+
+const Sidebar = ({ onFeedChange, onNewsClick }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [activeFeed, setActiveFeed] = useState('chat');
+  const [newsPosts, setNewsPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const handleFeedClick = (feedType) => {
     setActiveFeed(feedType);
     onFeedChange(feedType);
   };
+
+  const handleNewsClick = (postId) => {
+    onNewsClick(postId);
+    setActiveFeed('report');
+    onFeedChange('report');
+  };
+
+  // Fetch news posts for sidebar
+  const fetchNewsPosts = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE_URL}/api/v1/posts/short-post`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch posts');
+      }
+      const data = await response.json();
+      
+      // Transform the data to handle Base64 images and ensure proper field mapping
+      const transformedPosts = data.map(post => ({
+        ...post,
+        title: post.title || 'Untitled Post',
+        author: post.username || post.author || 'Anonymous',
+        date: post.created_at ? new Date(post.created_at).toLocaleDateString() : post.date || 'Unknown'
+      }));
+      
+      setNewsPosts(transformedPosts);
+    } catch (err) {
+      console.error('Error fetching news posts:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchNewsPosts();
+  }, []);
 
   return (
     <aside className={`sidebar${collapsed ? ' collapsed' : ''}`}>
@@ -33,21 +73,34 @@ const Sidebar = ({ onFeedChange }) => {
                 Chat
               </li>
               <li
+                className={`sidebar-link ${activeFeed === 'maps' ? 'active' : ''}`}
+                onClick={() => handleFeedClick('maps')}
+              >
+                Live Maps
+              </li>
+              <li
                 className={`sidebar-link ${activeFeed === 'report' ? 'active' : ''}`}
                 onClick={() => handleFeedClick('report')}
               >
                 Report Feed
               </li>
+              <li className="sidebar-divider"></li>
+              <li className="sidebar-section-title">Recent News</li>
+              {loading ? (
+                <li className="sidebar-news-item">Loading...</li>
+              ) : (
+                newsPosts.slice(0, 10).map(post => (
+                  <li
+                    key={post.id}
+                    className="sidebar-news-item"
+                    onClick={() => handleNewsClick(post.id)}
+                  >
+                    {post.title}
+                  </li>
+                ))
+              )}
             </ul>
           </nav>
-          <div className="sidebar-news">
-            <h2 className="news-title">News</h2>
-            <ul className="news-list">
-              <li>OpenAI launches new model</li>
-              <li>React 19 announced</li>
-              <li>AI trends in 2024</li>
-            </ul>
-          </div>
         </>
       )}
     </aside>
