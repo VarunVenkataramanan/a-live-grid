@@ -12,13 +12,9 @@ class Settings(BaseSettings):
 	SECRET_KEY: str
 	ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8  # 8 days
 
-	# File Upload
+	# File Upload Settings
 	UPLOAD_DIR: str = "uploads"
 	MAX_FILE_SIZE: int = 10 * 1024 * 1024  # 10MB
-
-	# Google Cloud Platform
-	GOOGLE_CLOUD_PROJECT_ID: str | None = None
-	GOOGLE_APPLICATION_CREDENTIALS: str | None = None
 
 	# Firestore Collections
 	USERS_COLLECTION: str = "users"

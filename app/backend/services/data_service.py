@@ -14,7 +14,15 @@ class DataService:
 		try:
 			if os.path.exists(self.data_file):
 				with open(self.data_file, encoding="utf-8") as f:
-					return json.load(f)
+					data = json.load(f)
+					# Handle both direct array and {"posts": [...]} structure
+					if isinstance(data, dict) and "posts" in data:
+						return data["posts"]
+					elif isinstance(data, list):
+						return data
+					else:
+						print(f"Unexpected data format in {self.data_file}")
+						return []
 			else:
 				# Create sample data if file doesn't exist
 				sample_data = self._create_sample_data()
@@ -28,8 +36,10 @@ class DataService:
 		"""Save data to JSON file"""
 		try:
 			os.makedirs(os.path.dirname(self.data_file), exist_ok=True)
+			# Save in the format {"posts": [...]} to match existing structure
+			save_data = {"posts": data or self.posts}
 			with open(self.data_file, "w", encoding="utf-8") as f:
-				json.dump(data or self.posts, f, indent=2, ensure_ascii=False)
+				json.dump(save_data, f, indent=2, ensure_ascii=False)
 		except Exception as e:
 			print(f"Error saving data: {e}")
 
@@ -283,7 +293,7 @@ class DataService:
 				"id": post["id"],
 				"username": post["username"],
 				"title": post["title"],
-				"description": post["description"],
+				"description": post.get("description") or post.get("long_description") or post.get("short_description", ""),
 				"image_bitmap": post.get("image_bitmap"),
 				"upvote_count": post["upvote_count"],
 				"downvote_count": post["downvote_count"],
