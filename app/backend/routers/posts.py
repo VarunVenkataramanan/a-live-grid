@@ -1,13 +1,15 @@
 from fastapi import APIRouter, File, Form, HTTPException, Query, UploadFile, status
 
-from app.agent import Agent
+# Temporarily disable agent import to fix deployment
+# from app.agent import Agent
 from app.backend.schemas.post import PostResponse, PostShortResponse, VoteRequest
 from app.backend.services.data_service import data_service
 from app.backend.services.storage_service import storage_service
 
 router = APIRouter()
 
-agent = Agent()
+# Temporarily disable agent initialization
+# agent = Agent()
 
 
 @router.get("/short-post", response_model=list[PostShortResponse])
@@ -68,7 +70,9 @@ async def create_post_with_image(
 			# Handle as file upload
 			image_url = await storage_service.upload_image(image, folder="posts")
 
-		location, condition = agent.categorize(description)
+		# Temporarily disable agent categorization
+		# location, condition = agent.categorize(description)
+		location, condition = "general", "information"
 
 		# Create post data
 		post_data = {
@@ -105,16 +109,17 @@ async def vote_post(post_id: int, vote: VoteRequest):
 	return {"message": f"Successfully {vote.vote_type}d post"}
 
 
-@router.post("/chat")
-async def chat(user_input: str, session_id: str = Query(...)):
-	"""
-	Chat with the agent
-	"""
-	try:
-		response = agent.process_message(user_input, session_id)
-		return {"response": response}
-	except Exception as e:
-		raise HTTPException(
-			status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-			detail=f"Error processing chat message: {e!s}",
-		) from e
+# Temporarily disable chat endpoint
+# @router.post("/chat")
+# async def chat(user_input: str, session_id: str = Query(...)):
+# 	"""
+# 	Chat with the agent
+# 	"""
+# 	try:
+# 		response = agent.process_message(user_input, session_id)
+# 		return {"response": response}
+# 	except Exception as e:
+# 		raise HTTPException(
+# 			status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+# 			detail=f"Error processing chat message: {e!s}",
+# 		) from e

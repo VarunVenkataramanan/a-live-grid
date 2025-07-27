@@ -1,5 +1,5 @@
 runtime: python311
-service: a-live-grid
+service: default
 
 env_variables:
   # API Settings
@@ -15,11 +15,6 @@ env_variables:
   # File Upload Settings
   UPLOAD_DIR: "uploads"
   MAX_FILE_SIZE: "10485760"
-  
-  # Firestore Collections
-  USERS_COLLECTION: "users"
-  POSTS_COLLECTION: "posts"
-  VOTES_COLLECTION: "votes"
   
   # Agent Configuration (optional - set these if using OpenAI)
   # OPENAI_API_KEY: "your-openai-api-key"
