@@ -8,4 +8,3 @@ from typing_extensions import TypedDict
 class AgentState(TypedDict):
 	llm: ChatOpenAI
 	messages: Annotated[list, add_messages]
-	variable: str | None = "hot"

@@ -122,7 +122,6 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
 .venv
 env/
 venv/
@@ -206,16 +205,6 @@ dev-debug.log
 # OS specific
 .DS_Store
 
-# taskmaster and cursor files
-.cursor/
-.cursorignore
-.taskmaster/
-
-# aws pem files 
-*.pem
-
-# test files
-test.py
-get_lat_long.py
-todo.txt
-.
+#secrets
+.env
+firebase.json

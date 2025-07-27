@@ -1,13 +1,19 @@
-from gevent import monkey
+import uvicorn
+import os
 
-monkey.patch_all()
-from app import create_app
-from app.config import config
+from app.backend.backend import app
 
-app = create_app()
+# For GCP App Engine, the app needs to be accessible as 'app'
+# This is already done by importing from app.backend.backend
 
 if __name__ == "__main__":
-	if config.ENV == "development":
-		app.run(host="0.0.0.0", port=8000, debug=config.DEBUG)
-	else:
-		app.run(debug=config.DEBUG)
+	# Get port from environment variable (GCP sets PORT)
+	port = int(os.environ.get("PORT", 8000))
+	
+	uvicorn.run(
+		"app.backend.backend:app",
+		host="0.0.0.0",
+		port=port,
+		reload=False,  # Disable reload for production
+		log_level="info",
+	)

@@ -65,7 +65,7 @@ select = [
 # ]
     
 ignore = ["COM819", "RUF012", "C901", "RET505"]
-extend-ignore = ["PD901", "W191", "B018", "E101", "W293", "SIM105", "PLR2004"]
+extend-ignore = ["PD901", "W191", "B018", "E101", "W293", "SIM105", "PLR2004", "B904"]
 unfixable = ["F401", "F841"]
 
 [lint.flake8-bugbear]
