@@ -1,54 +1,42 @@
 import logging
 import os
-import sqlite3
 import yaml
+from typing import Dict, List
 
 from dotenv import load_dotenv
 from pathlib import Path
-from typing import Dict
 
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_core.tools import Tool
 from langchain_openai import ChatOpenAI
-from langgraph.graph import END, START, StateGraph
-from langgraph.prebuilt import ToolNode, tools_condition
-from langgraph.checkpoint.memory import InMemorySaver
-
-from .prompt import get_system_prompt
-from .state import AgentState
-from .tools import reddit_tool, google_news_tool, twitter_tool, local_data_tool
 
 load_dotenv()
 
 
 class Agent:
     def __init__(self):
-        self.tools = [
-            reddit_tool,
-            google_news_tool,
-            twitter_tool,
-            local_data_tool,
-        ]
-        self.graph = None
-        self.memory = None
-        self.graph_path = Path("output/agent_graph.png")
         self.conditions = self.load_conditions("categories.yaml")
-
+        
         self.llm = ChatOpenAI(
-            model="gpt-4.1",
+            model="gpt-4o-mini",  # Using a more reliable model
             temperature=0.2,
             max_retries=3,
             api_key=os.getenv("OPENAI_API_KEY"),
         )
-
-        # Wrap deep_research into a callable Tool
-        self.deep_research_tool = Tool.from_function(
-            func=self.deep_research_wrapper,
-            name="deep_research",
-            description="Conduct deep research using Reddit, Twitter, Google News, and Local Data."
-        )
-
-        self.agent = self.create_agent(self.llm)
+        
+        # Simple tools for basic functionality
+        self.tools = [
+            Tool.from_function(
+                func=self.local_data_search,
+                name="local_data_search",
+                description="Search local data and posts for relevant information"
+            ),
+            Tool.from_function(
+                func=self.general_search,
+                name="general_search", 
+                description="Search for general information on a topic"
+            )
+        ]
 
     def load_conditions(self, filepath: str) -> Dict[str, list]:
         try:
@@ -105,13 +93,17 @@ class Agent:
             response = llm_with_tools.invoke(state["messages"])
             return {"messages": [response]}
 
-        tool_node = ToolNode(tools=self.tools)
+        def tools_node(state: AgentState):
+            # Simple tools node that uses the tools directly
+            llm_with_tools = self.llm.bind_tools(self.tools)
+            response = llm_with_tools.invoke(state["messages"])
+            return {"messages": [response]}
 
         graph_builder.add_node("chatbot", chatbot)
         graph_builder.add_node("deep_research", deep_research_node)
-        graph_builder.add_node("tools", tool_node)
+        graph_builder.add_node("tools", tools_node)
 
-        graph_builder.add_edge(START, "chatbot")
+        graph_builder.set_entry_point("chatbot")
         graph_builder.add_conditional_edges("chatbot", tools_condition)
         graph_builder.add_edge("tools", "chatbot")
 
