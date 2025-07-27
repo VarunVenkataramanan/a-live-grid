@@ -1,13 +1,76 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './LiveMaps.css';
 
-const LiveMaps = () => {
+const LiveMaps = ({ highlightLocation, highlightIconType, highlightTitle }) => {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [map, setMap] = useState(null);
   const [markers, setMarkers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const highlightedMarkerRef = useRef(null);
   const mapRef = useRef(null);
+
+  // Handle highlighted location changes
+  useEffect(() => {
+    if (highlightLocation && map && window.google && window.google.maps && 
+        typeof highlightLocation.lat === 'number' && typeof highlightLocation.lng === 'number') {
+      // Clear previous highlighted marker
+      if (highlightedMarkerRef.current) {
+        highlightedMarkerRef.current.setMap(null);
+        highlightedMarkerRef.current = null;
+      }
+      
+      // Small delay to prevent rapid marker creation
+      const timer = setTimeout(() => {
+        try {
+          // Create new highlighted marker
+          const marker = new window.google.maps.Marker({
+            position: highlightLocation,
+            map: map,
+            title: highlightTitle || 'Reported Location',
+            icon: getCustomMarkerIcon(highlightIconType || 'congestion'),
+            animation: window.google.maps.Animation.BOUNCE,
+            zIndex: 1000
+          });
+          
+          highlightedMarkerRef.current = marker;
+          
+          // Center map on highlighted location
+          map.setCenter(highlightLocation);
+          map.setZoom(15);
+          
+          // Add info window
+          const infoWindow = new window.google.maps.InfoWindow({
+            content: `<div style="padding: 8px;"><strong>${highlightTitle || 'Reported Location'}</strong><br/>Click to view details</div>`
+          });
+          
+          marker.addListener('click', () => {
+            infoWindow.open(map, marker);
+          });
+          
+          // Auto-open info window
+          infoWindow.open(map, marker);
+        } catch (error) {
+          console.error('Error creating highlighted marker:', error);
+        }
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    } else if (!highlightLocation && highlightedMarkerRef.current) {
+      // Clear marker when no highlight location is provided
+      highlightedMarkerRef.current.setMap(null);
+      highlightedMarkerRef.current = null;
+    }
+  }, [highlightLocation, highlightIconType, highlightTitle, map]);
+
+  // Cleanup highlighted marker on unmount
+  useEffect(() => {
+    return () => {
+      if (highlightedMarkerRef.current) {
+        highlightedMarkerRef.current.setMap(null);
+      }
+    };
+  }, []);
 
   // Traffic obstructions in Bangalore
   const predefinedLocations = [

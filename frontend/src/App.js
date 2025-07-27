@@ -17,6 +17,9 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeFeed, setActiveFeed] = useState('chat');
   const [selectedPostId, setSelectedPostId] = useState(null);
+  const [mapLocation, setMapLocation] = useState(null);
+  const [mapIconType, setMapIconType] = useState('congestion');
+  const [mapTitle, setMapTitle] = useState('');
 
   const handleFeedChange = (feedType) => {
     setActiveFeed(feedType);
@@ -44,12 +47,27 @@ function App() {
     setSelectedPostId(postId);
   };
 
+  const handleNavigateToMap = (location, iconType, title) => {
+    setMapLocation(location);
+    setMapIconType(iconType);
+    setMapTitle(title);
+    setActiveFeed('maps');
+  };
+
   const renderMainContent = () => {
     switch (activeFeed) {
       case 'report':
-        return <NewsFeed selectedPostId={selectedPostId} onPostClose={() => setSelectedPostId(null)} />;
+        return <NewsFeed 
+          selectedPostId={selectedPostId} 
+          onPostClose={() => setSelectedPostId(null)}
+          onNavigateToMap={handleNavigateToMap}
+        />;
       case 'maps':
-        return <LiveMaps />;
+        return <LiveMaps 
+          highlightLocation={mapLocation}
+          highlightIconType={mapIconType}
+          highlightTitle={mapTitle}
+        />;
       default:
         return <Chatbot />;
     }

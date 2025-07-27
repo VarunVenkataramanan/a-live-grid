@@ -3,7 +3,7 @@ import './NewsFeed.css';
 
 const API_BASE_URL = 'https://livegrid-467013.el.r.appspot.com';
 
-const NewsFeed = ({ selectedPostId, onPostClose }) => {
+const NewsFeed = ({ selectedPostId, onPostClose, onNavigateToMap }) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -11,6 +11,45 @@ const NewsFeed = ({ selectedPostId, onPostClose }) => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
+
+  // Function to determine obstruction type and location based on post content
+  const getObstructionInfo = (post) => {
+    const title = (post.title || '').toLowerCase();
+    const description = (post.description || '').toLowerCase();
+    const content = `${title} ${description}`;
+    
+    // Default location (Bangalore center)
+    let location = { lat: 12.9716, lng: 77.5946 };
+    let iconType = 'congestion';
+    
+    // Determine obstruction type based on content
+    if (content.includes('accident') || content.includes('collision') || content.includes('crash')) {
+      iconType = 'accident';
+    } else if (content.includes('pothole') || content.includes('road damage')) {
+      iconType = 'pothole';
+    } else if (content.includes('construction') || content.includes('work')) {
+      iconType = 'construction';
+    } else if (content.includes('signal') || content.includes('traffic light')) {
+      iconType = 'signal';
+    } else if (content.includes('water') || content.includes('flood') || content.includes('rain')) {
+      iconType = 'waterlogging';
+    } else if (content.includes('breakdown') || content.includes('vehicle')) {
+      iconType = 'breakdown';
+    } else if (content.includes('protest') || content.includes('march')) {
+      iconType = 'protest';
+    } else if (content.includes('tree') || content.includes('fallen')) {
+      iconType = 'tree';
+    } else if (content.includes('jam') || content.includes('heavy traffic')) {
+      iconType = 'jam';
+    }
+    
+    // Use geolocation from API if available, otherwise use default
+    if (post.Geolocation && Array.isArray(post.Geolocation) && post.Geolocation.length === 2) {
+      location = { lat: post.Geolocation[0], lng: post.Geolocation[1] };
+    }
+    
+    return { location, iconType };
+  };
 
   // API Functions
   const fetchShortPosts = async () => {
@@ -179,6 +218,13 @@ const NewsFeed = ({ selectedPostId, onPostClose }) => {
 
   const closeImagePreview = () => {
     setPreviewImage(null);
+  };
+
+  const handleViewOnMap = (post) => {
+    const { location, iconType } = getObstructionInfo(post);
+    if (onNavigateToMap) {
+      onNavigateToMap(location, iconType, post.title);
+    }
   };
 
   const renderModalImageCollage = (images) => {
@@ -370,14 +416,15 @@ const NewsFeed = ({ selectedPostId, onPostClose }) => {
               <p className="modal-description">{selectedPost.description}</p>
               <div className="modal-footer">
                 <span className="modal-author">By {selectedPost.author}</span>
-                <a 
-                  href={selectedPost.url} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
+                <button 
+                  onClick={() => handleViewOnMap(selectedPost)}
                   className="modal-link-btn"
                 >
-                  Read Full Article
-                </a>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '8px' }}>
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                  </svg>
+                  View on Map
+                </button>
               </div>
             </div>
           </div>
